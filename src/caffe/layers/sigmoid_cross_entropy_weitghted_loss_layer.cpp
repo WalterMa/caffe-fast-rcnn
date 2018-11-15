@@ -2,13 +2,11 @@
 #include <cfloat>
 #include <vector>
 
-#include "caffe/layer.hpp"
+#include "caffe/layers/sigmoid_cross_entropy_weighted_loss_layer.hpp"
 #include "caffe/util/math_functions.hpp"
-#include "caffe/vision_layers.hpp"
 
 namespace caffe {
-
-template <typename Dtype>
+ template <typename Dtype>
 void SigmoidCrossEntropyWeightedLossLayer<Dtype>::LayerSetUp(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   LossLayer<Dtype>::LayerSetUp(bottom, top);
@@ -18,8 +16,7 @@ void SigmoidCrossEntropyWeightedLossLayer<Dtype>::LayerSetUp(
   sigmoid_top_vec_.push_back(sigmoid_output_.get());
   sigmoid_layer_->SetUp(sigmoid_bottom_vec_, sigmoid_top_vec_);
 }
-
-template <typename Dtype>
+ template <typename Dtype>
 void SigmoidCrossEntropyWeightedLossLayer<Dtype>::Reshape(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   LossLayer<Dtype>::Reshape(bottom, top);
@@ -27,8 +24,7 @@ void SigmoidCrossEntropyWeightedLossLayer<Dtype>::Reshape(
       "SIGMOID_CROSS_ENTROPY_LOSS layer inputs must have the same count.";
   sigmoid_layer_->Reshape(sigmoid_bottom_vec_, sigmoid_top_vec_);
 }
-
-template <typename Dtype>
+ template <typename Dtype>
 void SigmoidCrossEntropyWeightedLossLayer<Dtype>::Forward_cpu(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   // The forward pass computes the sigmoid outputs.
@@ -52,8 +48,7 @@ void SigmoidCrossEntropyWeightedLossLayer<Dtype>::Forward_cpu(
   }
   top[0]->mutable_cpu_data()[0] = loss / num;
 }
-
-template <typename Dtype>
+ template <typename Dtype>
 void SigmoidCrossEntropyWeightedLossLayer<Dtype>::Backward_cpu(
     const vector<Blob<Dtype>*>& top, const vector<bool>& propagate_down,
     const vector<Blob<Dtype>*>& bottom) {
@@ -82,12 +77,9 @@ void SigmoidCrossEntropyWeightedLossLayer<Dtype>::Backward_cpu(
     caffe_scal(count, loss_weight / num, bottom_diff);
   }
 }
-
-#ifdef CPU_ONLY
+ #ifdef CPU_ONLY
 STUB_GPU_BACKWARD(SigmoidCrossEntropyWeightedLossLayer, Backward);
 #endif
-
-INSTANTIATE_CLASS(SigmoidCrossEntropyWeightedLossLayer);
+ INSTANTIATE_CLASS(SigmoidCrossEntropyWeightedLossLayer);
 REGISTER_LAYER_CLASS(SigmoidCrossEntropyWeightedLoss);
-
-}  // namespace caffe
+ }  // namespace caffe

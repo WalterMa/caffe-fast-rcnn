@@ -9,7 +9,7 @@
 #include "caffe/common.hpp"
 #include "caffe/layer_factory.hpp"
 #include "caffe/proto/caffe.pb.h"
-#include "caffe/util/device_alternate.hpp"
+#include "caffe/util/math_functions.hpp"
 
 /**
  Forward declare boost::thread instead of including boost/thread.hpp
@@ -316,6 +316,7 @@ class Layer {
     param_propagate_down_[param_id] = value;
   }
 
+  inline Phase phase() { return phase_; }
 
  protected:
   /** The protobuf that stores the layer parameters */

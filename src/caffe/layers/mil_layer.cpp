@@ -6,13 +6,13 @@
 #include "caffe/common.hpp"
 #include "caffe/filler.hpp"
 #include "caffe/layer.hpp"
-#include "caffe/vision_layers.hpp"
+#include "caffe/layers/mil_layer.hpp"
 #include "caffe/util/math_functions.hpp"
+
+namespace caffe {
 
 using std::max;
 using std::min;
-
-namespace caffe {
 
 template <typename Dtype>
 void MILLayer<Dtype>::LayerSetUp(
