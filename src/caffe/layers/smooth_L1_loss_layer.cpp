@@ -14,11 +14,8 @@ void SmoothL1LossLayer<Dtype>::LayerSetUp(
   const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   SmoothL1LossParameter loss_param = this->layer_param_.smooth_l1_loss_param();
   sigma2_ = loss_param.sigma() * loss_param.sigma();
-  has_weights_ = (bottom.size() >= 3);
-  if (has_weights_) {
-    CHECK_EQ(bottom.size(), 4) << "If weights are used, must specify both "
-      "inside and outside weights";
-  }
+  inside_weights_ = (bottom.size() >= 3);
+  outside_weights_ = (bottom.size() == 4);
 }
 
 template <typename Dtype>
@@ -28,10 +25,12 @@ void SmoothL1LossLayer<Dtype>::Reshape(
   CHECK_EQ(bottom[0]->channels(), bottom[1]->channels());
   CHECK_EQ(bottom[0]->height(), bottom[1]->height());
   CHECK_EQ(bottom[0]->width(), bottom[1]->width());
-  if (has_weights_) {
+  if (inside_weights_) {
     CHECK_EQ(bottom[0]->channels(), bottom[2]->channels());
     CHECK_EQ(bottom[0]->height(), bottom[2]->height());
     CHECK_EQ(bottom[0]->width(), bottom[2]->width());
+  }
+  if (outside_weights_) {
     CHECK_EQ(bottom[0]->channels(), bottom[3]->channels());
     CHECK_EQ(bottom[0]->height(), bottom[3]->height());
     CHECK_EQ(bottom[0]->width(), bottom[3]->width());

@@ -34,7 +34,7 @@ void SmoothL1LossLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       bottom[0]->gpu_data(),
       bottom[1]->gpu_data(),
       diff_.mutable_gpu_data());    // d := b0 - b1
-  if (has_weights_) {
+  if (inside_weights_) {
     // apply "inside" weights
     caffe_gpu_mul(
         count,
@@ -46,7 +46,7 @@ void SmoothL1LossLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       count, diff_.gpu_data(), errors_.mutable_gpu_data(), sigma2_);
   CUDA_POST_KERNEL_CHECK;
 
-  if (has_weights_) {
+  if (outside_weights_) {
     // apply "outside" weights
     caffe_gpu_mul(
         count,
@@ -94,13 +94,15 @@ void SmoothL1LossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
           diff_.gpu_data(),                // x
           Dtype(0),                        // beta
           bottom[i]->mutable_gpu_diff());  // y
-      if (has_weights_) {
+      if (inside_weights_) {
         // Scale by "inside" weight
         caffe_gpu_mul(
             count,
             bottom[2]->gpu_data(),
             bottom[i]->gpu_diff(),
             bottom[i]->mutable_gpu_diff());
+      }
+      if (outside_weights_) {
         // Scale by "outside" weight
         caffe_gpu_mul(
             count,

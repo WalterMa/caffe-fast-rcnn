@@ -95,7 +95,8 @@ class SmoothL1LossLayer : public LossLayer<Dtype> {
   Blob<Dtype> diff_;
   Blob<Dtype> errors_;
   Blob<Dtype> ones_;
-  bool has_weights_;
+  bool inside_weights_;
+  bool outside_weights_;
   Dtype sigma2_;
 };
 
